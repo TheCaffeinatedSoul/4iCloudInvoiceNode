@@ -12,7 +12,7 @@ app.use(express.json({ limit: '150mb' }))
 app.use(express.urlencoded({ limit: '150mb', extended: true }))
 
 var corsOptions = {
-  origin: 'http://localhost:2030',
+  origin: 'http://localhost:2020',
   optionsSuccessStatus: 200,
 }
 
