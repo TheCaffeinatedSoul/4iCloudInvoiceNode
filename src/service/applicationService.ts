@@ -38,40 +38,51 @@ export const getInvoiceBySearchService = async (req: Request, page: number, limi
   const { ORGANIZATION, INVOICE_NUMBER, SUPPLIER_NUMBER, SUPPLIER_NAME, FROM_DATE, TO_DATE } = req.body
   try {
     const db = req.app.locals.db
+    const conditions = []
+    const params = []
+
+    if (ORGANIZATION) {
+      conditions.push("archive_data->>'$.org_name' LIKE ?")
+      params.push(`%${ORGANIZATION}%`)
+    }
+    if (FROM_DATE) {
+      conditions.push("archive_data->>'$.gl_date' >= ?")
+      params.push(FROM_DATE)
+    }
+    if (TO_DATE) {
+      conditions.push("archive_data->>'$.gl_date' <= ?")
+      params.push(TO_DATE)
+    }
+    if (INVOICE_NUMBER) {
+      conditions.push("archive_data->>'$.invoice_num' = ?")
+      params.push(INVOICE_NUMBER)
+    }
+    if (SUPPLIER_NUMBER) {
+      conditions.push("archive_data->>'$.vendor_num' = ?")
+      params.push(SUPPLIER_NUMBER)
+    }
+    if (SUPPLIER_NAME) {
+      conditions.push("archive_data->>'$.vendor_name' = ?")
+      params.push(SUPPLIER_NAME)
+    }
+
+    const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''
+    const offset = (page - 1) * limit
+    params.push(limit)
+    params.push(offset)
+
     const query = `
       SELECT * FROM arc_archive_data 
-      WHERE archive_data->>'$.org_name' LIKE ? 
-      AND archive_data->>'$.gl_date' >= ? 
-      AND archive_data->>'$.gl_date' <= ?
-      ${INVOICE_NUMBER ? "AND archive_data->>'$.invoice_num' = ?" : ''}
-      ${SUPPLIER_NUMBER ? "AND archive_data->>'$.vendor_num' = ?" : ''}
-      ${SUPPLIER_NAME ? "AND archive_data->>'$.vendor_name' = ?" : ''}
+      ${whereClause} 
       LIMIT ? OFFSET ?
     `
-
-    const offset = (page - 1) * limit
-
-    const params = [
-      `%${ORGANIZATION}%`,
-      FROM_DATE,
-      TO_DATE,
-      ...(INVOICE_NUMBER ? [INVOICE_NUMBER] : []),
-      ...(SUPPLIER_NUMBER ? [SUPPLIER_NUMBER] : []),
-      ...(SUPPLIER_NAME ? [SUPPLIER_NAME] : []),
-      limit,
-      offset,
-    ]
 
     const [rows] = await db.query(query, params)
     const totalCountQuery = `
       SELECT COUNT(*) as totalCount FROM arc_archive_data 
-      WHERE archive_data->>'$.org_name' LIKE ? 
-      AND archive_data->>'$.gl_date' >= ? 
-      AND archive_data->>'$.gl_date' <= ?
-      ${INVOICE_NUMBER ? "AND archive_data->>'$.invoice_num' = ?" : ''}
-      ${SUPPLIER_NUMBER ? "AND archive_data->>'$.vendor_num' = ?" : ''}
-      ${SUPPLIER_NAME ? "AND archive_data->>'$.vendor_name' = ?" : ''}
+      ${whereClause}
     `
+
     const [totalCountRow] = await db.query(totalCountQuery, params.slice(0, -2))
     const totalCount = totalCountRow[0].totalCount
     const pageCount = Math.ceil(totalCount / (limit || 10))
