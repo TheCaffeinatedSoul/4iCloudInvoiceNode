@@ -1,24 +1,4 @@
-import { Request, Response } from 'express'
-
-export const getAllInvoiceService = async (req: Request, searchOrganizationName: string, page: number, limit: number) => {
-  const searchTerm = new RegExp(searchOrganizationName, 'i')
-  try {
-    const db = req.app.locals.db
-    const offset = (page - 1) * limit
-
-    const [rows, fields] = await db.query('SELECT SQL_CALC_FOUND_ROWS * FROM arc_archive_data WHERE archive_data LIMIT ? OFFSET ?', [limit, offset])
-
-    const [totalCountRow] = await db.query('SELECT FOUND_ROWS() as totalCount')
-    const totalCount = totalCountRow[0].totalCount
-
-    const response = rows.map((row: any) => row.archive_data)
-    const pageCount = Math.ceil(totalCount / limit)
-
-    return { data: response, pageCount }
-  } catch (error) {
-    console.log('Error at getAllInvoiceService: ', error)
-  }
-}
+import { Request } from 'express'
 
 export const getDetailsByInvoiceNumberService = async (req: Request) => {
   try {
