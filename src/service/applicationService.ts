@@ -73,3 +73,31 @@ export const getInvoiceBySearchService = async (req: Request, page: number, limi
     console.log('Error at getInvoiceBYSearchService: ', error)
   }
 }
+
+export const getLineService = async (req: Request) => {
+  try {
+    const db = req.app.locals.db
+    const invoice_number = req.body.INVOICE_NUMBER
+    const line_number = req.body.LINE_NUMBER
+    const [rows, fields] = await db.query(
+      `SELECT JSON_UNQUOTE(JSON_EXTRACT(invoice_line.data, '$')) AS line_data
+       FROM arc_archive_data
+       JOIN JSON_TABLE(
+         arc_archive_data.archive_data,
+         '$.invoice_lines[*]' 
+         COLUMNS (
+           line_number INT PATH '$.line_number',
+           data JSON PATH '$'
+         )
+       ) AS invoice_line
+       ON arc_archive_data.doc_number = ? AND invoice_line.line_number = ?`,
+      [invoice_number, line_number]
+    )
+    const response = rows.map((row: any) => {
+      return JSON.parse(row.line_data)
+    })
+    return response
+  } catch (error) {
+    console.log('Error at getLineService: ', error)
+  }
+}

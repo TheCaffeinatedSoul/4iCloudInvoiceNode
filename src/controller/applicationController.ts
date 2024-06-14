@@ -1,4 +1,4 @@
-import { getDetailsByInvoiceNumberService, getInvoiceBySearchService } from '../service/applicationService'
+import { getDetailsByInvoiceNumberService, getInvoiceBySearchService, getLineService } from '../service/applicationService'
 import { Request, Response } from 'express'
 
 export const getDetailsByInvoiceNumberController = async (req: Request, res: Response) => {
@@ -26,5 +26,16 @@ export const getInvoiceBySearchController = async (req: Request, res: Response) 
     }
   } catch (error) {
     res.status(404).json({ message: 'Error at getInvoiceBySearchController: ', error })
+  }
+}
+
+export const getLineController = async (req: Request, res: Response) => {
+  try {
+    const data = await getLineService(req)
+    if (data) {
+      res.status(200).json({ message: 'Data fetched', data })
+    }
+  } catch (error) {
+    res.status(404).json({ message: 'Error at getLineController: ', error })
   }
 }
