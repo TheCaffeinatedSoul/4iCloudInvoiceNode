@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 
 export const getDetailsByInvoiceNumberController = async (req: Request, res: Response) => {
   try {
-    const data = await getDetailsByInvoiceNumberService(req)
+    const data = await getDetailsByInvoiceNumberService(req.body)
     if (data) {
       res.status(200).json({ message: 'Data fetched', data })
     }
@@ -20,7 +20,7 @@ export const getInvoiceBySearchController = async (req: Request, res: Response) 
     const page = parseInt(pageStr) || 1
     const limit = parseInt(limitStr) || 10
 
-    const data = await getInvoiceBySearchService(req, page, limit)
+    const data = await getInvoiceBySearchService(req.body, page, limit)
     if (data) {
       res.status(200).json({ message: 'Data fetched', data })
     }
@@ -31,7 +31,7 @@ export const getInvoiceBySearchController = async (req: Request, res: Response) 
 
 export const getLineController = async (req: Request, res: Response) => {
   try {
-    const data = await getLineService(req)
+    const data = await getLineService(req.body)
     if (data) {
       res.status(200).json({ message: 'Data fetched', data })
     }

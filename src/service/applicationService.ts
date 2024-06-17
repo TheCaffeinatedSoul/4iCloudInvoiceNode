@@ -1,10 +1,14 @@
-import { Request } from 'express'
+import { queryWithBindExecute } from '../config/database'
+import { query } from '../constants/query'
+import { T_InvoiceNumber, T_InvoiceSearch } from '../types/services'
 
-export const getDetailsByInvoiceNumberService = async (req: Request) => {
+export const getDetailsByInvoiceNumberService = async (payload: T_InvoiceNumber) => {
+  const { INVOICE_NUMBER } = payload
   try {
-    const db = req.app.locals.db
-    const invoice_number = req.body.INVOICE_NUMBER
-    const [rows, fields] = await db.query('SELECT * FROM arc_archive_data where doc_number = ?', [invoice_number])
+    const rows = await queryWithBindExecute({
+      sql: query.GET_DETAILS_BY_INVOICE_NUMBER,
+      values: [INVOICE_NUMBER],
+    })
     const response = rows.map((row: any) => {
       return row.archive_data
     })
@@ -14,10 +18,9 @@ export const getDetailsByInvoiceNumberService = async (req: Request) => {
   }
 }
 
-export const getInvoiceBySearchService = async (req: Request, page: number, limit: number) => {
-  const { ORGANIZATION, INVOICE_NUMBER, SUPPLIER_NUMBER, SUPPLIER_NAME, FROM_DATE, TO_DATE } = req.body
+export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: number, limit: number) => {
+  const { ORGANIZATION, INVOICE_NUMBER, SUPPLIER_NUMBER, SUPPLIER_NAME, FROM_DATE, TO_DATE } = payload
   try {
-    const db = req.app.locals.db
     const conditions = []
     const params = []
 
@@ -26,11 +29,16 @@ export const getInvoiceBySearchService = async (req: Request, page: number, limi
       params.push(`%${ORGANIZATION}%`)
     }
     if (FROM_DATE) {
-      conditions.push("archive_data->>'$.gl_date' >= ?")
-      params.push(FROM_DATE)
+      if (TO_DATE) {
+        conditions.push("archive_data->>'$.invoice_date' BETWEEN ? AND ?")
+        params.push(FROM_DATE, TO_DATE)
+      } else {
+        conditions.push("archive_data->>'$.invoice_date' >= ?")
+        params.push(FROM_DATE)
+      }
     }
     if (TO_DATE) {
-      conditions.push("archive_data->>'$.gl_date' <= ?")
+      conditions.push("archive_data->>'$.invoice_date' <= ?")
       params.push(TO_DATE)
     }
     if (INVOICE_NUMBER) {
@@ -57,45 +65,36 @@ export const getInvoiceBySearchService = async (req: Request, page: number, limi
       LIMIT ? OFFSET ?
     `
 
-    const [rows] = await db.query(query, params)
+    const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
       SELECT COUNT(*) as totalCount FROM arc_archive_data 
       ${whereClause}
     `
 
-    const [totalCountRow] = await db.query(totalCountQuery, params.slice(0, -2))
+    const totalCountRow = await queryWithBindExecute({ sql: totalCountQuery, values: params.slice(0, -2) })
     const totalCount = totalCountRow[0].totalCount
     const pageCount = Math.ceil(totalCount / (limit || 10))
     const response = rows.map((row: any) => row.archive_data)
 
     return { data: response, pageCount }
   } catch (error) {
-    console.log('Error at getInvoiceBYSearchService: ', error)
+    console.log('Error at getInvoiceBySearchService: ', error)
   }
 }
 
-export const getLineService = async (req: Request) => {
+export const getLineService = async (payload: T_InvoiceNumber) => {
+  const { INVOICE_NUMBER, LINE_NUMBER } = payload
+  console.log('Payload: ', payload)
   try {
-    const db = req.app.locals.db
-    const invoice_number = req.body.INVOICE_NUMBER
-    const line_number = req.body.LINE_NUMBER
-    const [rows, fields] = await db.query(
-      `SELECT JSON_UNQUOTE(JSON_EXTRACT(invoice_line.data, '$')) AS line_data
-       FROM arc_archive_data
-       JOIN JSON_TABLE(
-         arc_archive_data.archive_data,
-         '$.invoice_lines[*]' 
-         COLUMNS (
-           line_number INT PATH '$.line_number',
-           data JSON PATH '$'
-         )
-       ) AS invoice_line
-       ON arc_archive_data.doc_number = ? AND invoice_line.line_number = ?`,
-      [invoice_number, line_number]
-    )
+    const rows = await queryWithBindExecute({
+      sql: query.GET_LINE_DETAILS,
+      values: [INVOICE_NUMBER, LINE_NUMBER],
+    })
+    console.log('Rows: ', rows)
     const response = rows.map((row: any) => {
       return JSON.parse(row.line_data)
     })
+    console.log('Response: ', response)
     return response
   } catch (error) {
     console.log('Error at getLineService: ', error)
