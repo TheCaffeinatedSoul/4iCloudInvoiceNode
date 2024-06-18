@@ -50,8 +50,8 @@ export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: 
       params.push(SUPPLIER_NUMBER)
     }
     if (SUPPLIER_NAME) {
-      conditions.push("archive_data->>'$.vendor_name' = ?")
-      params.push(SUPPLIER_NAME)
+      conditions.push("archive_data->>'$.vendor_name' LIKE ?")
+      params.push(`%${SUPPLIER_NAME}%`)
     }
 
     const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''
