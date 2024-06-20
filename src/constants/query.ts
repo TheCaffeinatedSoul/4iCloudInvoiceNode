@@ -11,4 +11,5 @@ export const query = Object.freeze({
          )
        ) AS invoice_line
        ON arc_archive_data.doc_number = ? AND invoice_line.line_number = ?`,
+  GET_CHECK_DETAILS: `SELECT * FROM arc_archive_data where doc_number = ? AND doc_entity_name = "AP_CHECKS"`,
 })

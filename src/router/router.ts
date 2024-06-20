@@ -1,6 +1,8 @@
 import { Router } from 'express'
-import { applicationRouter } from './invoice'
+import { invoiceRouter } from './invoice'
+import { checksRouter } from './checks'
 
 export const mainRouter = Router()
 
-mainRouter.use('/invoice', applicationRouter)
+mainRouter.use('/invoice', invoiceRouter)
+mainRouter.use('/checks', checksRouter)

@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import { getDetailsByInvoiceNumberController, getInvoiceBySearchController, getLineController } from '../controller/invoice'
 
-export const applicationRouter = Router()
+export const invoiceRouter = Router()
 
-applicationRouter.post('/getdetails', getDetailsByInvoiceNumberController)
-applicationRouter.post('/getsearchedinvoice', getInvoiceBySearchController)
-applicationRouter.post('/getlineinformation', getLineController)
+invoiceRouter.post('/getdetails', getDetailsByInvoiceNumberController)
+invoiceRouter.post('/getsearchedinvoice', getInvoiceBySearchController)
+invoiceRouter.post('/getlineinformation', getLineController)
