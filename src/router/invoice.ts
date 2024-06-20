@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { getDetailsByInvoiceNumberController, getInvoiceBySearchController, getLineController } from '../controller/applicationController'
+import { getDetailsByInvoiceNumberController, getInvoiceBySearchController, getLineController } from '../controller/invoice'
 
 export const applicationRouter = Router()
 

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { applicationRouter } from './applicationRoutes'
+import { applicationRouter } from './invoice'
 
 export const mainRouter = Router()
 
