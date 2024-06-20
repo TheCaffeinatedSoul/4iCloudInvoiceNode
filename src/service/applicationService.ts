@@ -4,10 +4,12 @@ import { T_InvoiceNumber, T_InvoiceSearch } from '../types/services'
 
 export const getDetailsByInvoiceNumberService = async (payload: T_InvoiceNumber) => {
   const { INVOICE_NUMBER } = payload
+  let invoice_num = INVOICE_NUMBER
+  if (INVOICE_NUMBER.includes('%')) invoice_num = decodeURIComponent(INVOICE_NUMBER)
   try {
     const rows = await queryWithBindExecute({
       sql: query.GET_DETAILS_BY_INVOICE_NUMBER,
-      values: [INVOICE_NUMBER],
+      values: [invoice_num],
     })
     const response = rows.map((row: any) => {
       return row.archive_data
@@ -42,8 +44,8 @@ export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: 
       params.push(TO_DATE)
     }
     if (INVOICE_NUMBER) {
-      conditions.push("archive_data->>'$.invoice_num' = ?")
-      params.push(INVOICE_NUMBER)
+      conditions.push("archive_data->>'$.invoice_num' LIKE ?")
+      params.push(`%${INVOICE_NUMBER}%`)
     }
     if (SUPPLIER_NUMBER) {
       conditions.push("archive_data->>'$.vendor_num' = ?")
@@ -54,20 +56,20 @@ export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: 
       params.push(`%${SUPPLIER_NAME}%`)
     }
 
-    const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''
+    const whereClause = conditions.length ? `${conditions.join(' AND ')}` : ''
     const offset = (page - 1) * limit
     params.push(limit)
     params.push(offset)
 
     const query = `
-      SELECT * FROM arc_archive_data 
+      SELECT * FROM arc_archive_data WHERE doc_entity_name = "AP_INVOICE" ${conditions.length ? 'AND' : ''}
       ${whereClause} 
       LIMIT ? OFFSET ?
     `
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
-      SELECT COUNT(*) as totalCount FROM arc_archive_data 
+      SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "AP_INVOICE" ${conditions.length ? 'AND' : ''}
       ${whereClause}
     `
 

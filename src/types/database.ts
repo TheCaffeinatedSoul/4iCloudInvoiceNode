@@ -1,4 +1,4 @@
-export interface ConnectionOptions {
+export interface I_ConnectionOptions {
   user: string
   password: string
   host: string

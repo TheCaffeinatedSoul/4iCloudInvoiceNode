@@ -1,5 +1,5 @@
 export const query = Object.freeze({
-  GET_DETAILS_BY_INVOICE_NUMBER: `SELECT * FROM arc_archive_data where doc_number = ?`,
+  GET_DETAILS_BY_INVOICE_NUMBER: `SELECT * FROM arc_archive_data where doc_number = ? AND doc_entity_name = "AP_INVOICE"`,
   GET_LINE_DETAILS: `SELECT JSON_UNQUOTE(JSON_EXTRACT(invoice_line.data, '$')) AS line_data
        FROM arc_archive_data
        JOIN JSON_TABLE(
