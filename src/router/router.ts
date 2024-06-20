@@ -3,4 +3,4 @@ import { applicationRouter } from './invoice'
 
 export const mainRouter = Router()
 
-mainRouter.use('/', applicationRouter)
+mainRouter.use('/invoice', applicationRouter)
