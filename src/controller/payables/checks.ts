@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getChecksBySearchService, getDetailsByCheckNumberService } from '../service/checks'
+import { getChecksBySearchService, getDetailsByCheckNumberService } from '../../service/payables/checks'
 
 export const getDetailsByCheckNumberController = async (req: Request, res: Response) => {
   try {

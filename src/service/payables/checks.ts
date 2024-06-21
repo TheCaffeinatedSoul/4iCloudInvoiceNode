@@ -1,15 +1,15 @@
-import { queryWithBindExecute } from '../config/database'
-import { query } from '../constants/query'
-import { T_InvoiceNumber, T_InvoiceSearch } from '../types/services'
+import { queryWithBindExecute } from '../../config/database'
+import { query } from '../../constants/query'
+import { T_CheckNumber, T_CheckSearch } from '../../types/services'
 
-export const getDetailsByInvoiceNumberService = async (payload: T_InvoiceNumber) => {
-  const { INVOICE_NUMBER } = payload
-  let invoice_num = INVOICE_NUMBER
-  if (INVOICE_NUMBER.includes('%')) invoice_num = decodeURIComponent(INVOICE_NUMBER)
+export const getDetailsByCheckNumberService = async (payload: T_CheckNumber) => {
+  const { CHECK_NUMBER } = payload
+  let check_number = CHECK_NUMBER
+  if (CHECK_NUMBER.includes('%')) check_number = decodeURIComponent(CHECK_NUMBER)
   try {
     const rows = await queryWithBindExecute({
-      sql: query.GET_DETAILS_BY_INVOICE_NUMBER,
-      values: [invoice_num],
+      sql: query.GET_CHECK_DETAILS,
+      values: [check_number],
     })
     const response = rows.map((row: any) => {
       return row.archive_data
@@ -20,8 +20,8 @@ export const getDetailsByInvoiceNumberService = async (payload: T_InvoiceNumber)
   }
 }
 
-export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: number, limit: number) => {
-  const { ORGANIZATION, INVOICE_NUMBER, SUPPLIER_NUMBER, SUPPLIER_NAME, FROM_DATE, TO_DATE } = payload
+export const getChecksBySearchService = async (payload: T_CheckSearch, page: number, limit: number) => {
+  const { ORGANIZATION, CHECK_NUMBER, FROM_DATE, TO_DATE, SUPPLIER_NUMBER, SUPPLIER_NAME } = payload
   try {
     const conditions = []
     const params = []
@@ -32,23 +32,23 @@ export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: 
     }
     if (FROM_DATE) {
       if (TO_DATE) {
-        conditions.push("archive_data->>'$.invoice_date' BETWEEN ? AND ?")
+        conditions.push("archive_data->>'$.check_date' BETWEEN ? AND ?")
         params.push(FROM_DATE, TO_DATE)
       } else {
-        conditions.push("archive_data->>'$.invoice_date' >= ?")
+        conditions.push("archive_data->>'$.check_date' >= ?")
         params.push(FROM_DATE)
       }
     }
     if (TO_DATE) {
-      conditions.push("archive_data->>'$.invoice_date' <= ?")
+      conditions.push("archive_data->>'$.check_date' <= ?")
       params.push(TO_DATE)
     }
-    if (INVOICE_NUMBER) {
-      conditions.push("archive_data->>'$.invoice_num' LIKE ?")
-      params.push(`%${INVOICE_NUMBER}%`)
+    if (CHECK_NUMBER) {
+      conditions.push("archive_data->>'$.check_number' LIKE ?")
+      params.push(`%${CHECK_NUMBER}%`)
     }
     if (SUPPLIER_NUMBER) {
-      conditions.push("archive_data->>'$.vendor_num' = ?")
+      conditions.push("archive_data->>'$.vendor_number' = ?")
       params.push(SUPPLIER_NUMBER)
     }
     if (SUPPLIER_NAME) {
@@ -62,14 +62,14 @@ export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: 
     params.push(offset)
 
     const query = `
-      SELECT * FROM arc_archive_data WHERE doc_entity_name = "AP_INVOICE" ${conditions.length ? 'AND' : ''}
+      SELECT * FROM arc_archive_data WHERE doc_entity_name = "AP_CHECKS" ${conditions.length ? 'AND' : ''}
       ${whereClause} 
       LIMIT ? OFFSET ?
     `
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
-      SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "AP_INVOICE" ${conditions.length ? 'AND' : ''}
+      SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "AP_CHECKS" ${conditions.length ? 'AND' : ''}
       ${whereClause}
     `
 
@@ -84,13 +84,13 @@ export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: 
   }
 }
 
-export const getLineService = async (payload: T_InvoiceNumber) => {
-  const { INVOICE_NUMBER, LINE_NUMBER } = payload
+export const getLineService = async (payload: T_CheckNumber) => {
+  const { CHECK_NUMBER } = payload
   console.log('Payload: ', payload)
   try {
     const rows = await queryWithBindExecute({
       sql: query.GET_LINE_DETAILS,
-      values: [INVOICE_NUMBER, LINE_NUMBER],
+      values: [CHECK_NUMBER],
     })
     console.log('Rows: ', rows)
     const response = rows.map((row: any) => {

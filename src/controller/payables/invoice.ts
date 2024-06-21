@@ -1,4 +1,4 @@
-import { getDetailsByInvoiceNumberService, getInvoiceBySearchService, getLineService } from '../service/invoice'
+import { getDetailsByInvoiceNumberService, getInvoiceBySearchService, getLineService } from '../../service/payables/invoice'
 import { Request, Response } from 'express'
 
 export const getDetailsByInvoiceNumberController = async (req: Request, res: Response) => {

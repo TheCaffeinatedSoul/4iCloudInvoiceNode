@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { getChecksBySearchController, getDetailsByCheckNumberController } from '../controller/checks'
+import { getChecksBySearchController, getDetailsByCheckNumberController } from '../../controller/payables/checks'
 
 export const checksRouter = Router()
 

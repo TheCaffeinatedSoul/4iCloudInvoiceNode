@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { invoiceRouter } from './invoice'
-import { checksRouter } from './checks'
+import { invoiceRouter } from './payables/invoice'
+import { checksRouter } from './payables/checks'
 
 export const mainRouter = Router()
 

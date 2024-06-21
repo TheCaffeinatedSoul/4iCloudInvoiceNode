@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { getDetailsByInvoiceNumberController, getInvoiceBySearchController, getLineController } from '../controller/invoice'
+import { getDetailsByInvoiceNumberController, getInvoiceBySearchController, getLineController } from '../../controller/payables/invoice'
 
 export const invoiceRouter = Router()
 
