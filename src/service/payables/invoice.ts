@@ -86,17 +86,14 @@ export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: 
 
 export const getLineService = async (payload: T_InvoiceNumber) => {
   const { INVOICE_NUMBER, LINE_NUMBER } = payload
-  console.log('Payload: ', payload)
   try {
     const rows = await queryWithBindExecute({
       sql: query.GET_LINE_DETAILS,
       values: [INVOICE_NUMBER, LINE_NUMBER],
     })
-    console.log('Rows: ', rows)
     const response = rows.map((row: any) => {
       return JSON.parse(row.line_data)
     })
-    console.log('Response: ', response)
     return response
   } catch (error) {
     console.log('Error at getLineService: ', error)

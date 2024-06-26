@@ -11,5 +11,18 @@ export const query = Object.freeze({
          )
        ) AS invoice_line
        ON arc_archive_data.doc_number = ? AND invoice_line.line_number = ?`,
-  GET_CHECK_DETAILS: `SELECT * FROM arc_archive_data where doc_number = ? AND doc_entity_name = "AP_CHECKS"`,
+  GET_CHECK_DETAILS: `SELECT * FROM arc_archive_data WHERE doc_number = ? AND doc_entity_name = "AP_CHECKS"`,
+  GET_TRANSACTION_DETAILS: `SELECT * FROM arc_archive_data WHERE doc_number = ? AND doc_entity_name = "AR_INVOICE"`,
+  GET_DETAILS_BY_REQUISITION_NUMBER: `SELECT * FROM arc_archive_data where doc_number = ? AND doc_entity_name = "REQ_HEADERS"`,
+  GET_REQUISITION_LINES: `SELECT JSON_UNQUOTE(JSON_EXTRACT(requisition_line.data, '$')) AS line_data
+       FROM arc_archive_data
+       JOIN JSON_TABLE(
+         arc_archive_data.archive_data,
+         '$.requisition_lines[*]' 
+         COLUMNS (
+           line_num INT PATH '$.line_num',
+           data JSON PATH '$'
+         )
+       ) AS requisition_line
+       ON arc_archive_data.doc_number = ? AND requisition_line.line_num = ?`,
 })

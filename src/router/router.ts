@@ -1,8 +1,10 @@
 import { Router } from 'express'
-import { invoiceRouter } from './payables/invoice'
-import { checksRouter } from './payables/checks'
+import { payablesRouter } from './payables/payables-main'
+import { receivablesRouter } from './receivables/receivables-main'
+import { purchaseRouter } from './purchase/purchase-main'
 
 export const mainRouter = Router()
 
-mainRouter.use('/invoice', invoiceRouter)
-mainRouter.use('/checks', checksRouter)
+mainRouter.use('/payables', payablesRouter)
+mainRouter.use('/receivables', receivablesRouter)
+mainRouter.use('/purchase', purchaseRouter)
