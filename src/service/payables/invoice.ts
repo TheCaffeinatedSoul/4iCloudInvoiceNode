@@ -3,13 +3,13 @@ import { query } from '../../constants/query'
 import { T_InvoiceNumber, T_InvoiceSearch } from '../../types/services'
 
 export const getDetailsByInvoiceNumberService = async (payload: T_InvoiceNumber) => {
-  const { INVOICE_NUMBER } = payload
-  let invoice_num = INVOICE_NUMBER
-  if (INVOICE_NUMBER.includes('%')) invoice_num = decodeURIComponent(INVOICE_NUMBER)
+  const { INVOICE_ID } = payload
+  let invoice_id = INVOICE_ID
+  if (INVOICE_ID.includes('%')) invoice_id = decodeURIComponent(INVOICE_ID)
   try {
     const rows = await queryWithBindExecute({
       sql: query.GET_DETAILS_BY_INVOICE_NUMBER,
-      values: [invoice_num],
+      values: [invoice_id],
     })
     const response = rows.map((row: any) => {
       return row.archive_data
@@ -85,11 +85,11 @@ export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: 
 }
 
 export const getLineService = async (payload: T_InvoiceNumber) => {
-  const { INVOICE_NUMBER, LINE_NUMBER } = payload
+  const { INVOICE_ID, LINE_NUMBER } = payload
   try {
     const rows = await queryWithBindExecute({
       sql: query.GET_LINE_DETAILS,
-      values: [INVOICE_NUMBER, LINE_NUMBER],
+      values: [INVOICE_ID, LINE_NUMBER],
     })
     const response = rows.map((row: any) => {
       return JSON.parse(row.line_data)

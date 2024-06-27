@@ -3,13 +3,13 @@ import { query } from '../../constants/query'
 import { T_CheckNumber, T_CheckSearch } from '../../types/services'
 
 export const getDetailsByCheckNumberService = async (payload: T_CheckNumber) => {
-  const { CHECK_NUMBER } = payload
-  let check_number = CHECK_NUMBER
-  if (CHECK_NUMBER.includes('%')) check_number = decodeURIComponent(CHECK_NUMBER)
+  const { CHECK_ID } = payload
+  let check_id = CHECK_ID
+  if (CHECK_ID.includes('%')) check_id = decodeURIComponent(CHECK_ID)
   try {
     const rows = await queryWithBindExecute({
       sql: query.GET_CHECK_DETAILS,
-      values: [check_number],
+      values: [check_id],
     })
     const response = rows.map((row: any) => {
       return row.archive_data
@@ -85,18 +85,15 @@ export const getChecksBySearchService = async (payload: T_CheckSearch, page: num
 }
 
 export const getLineService = async (payload: T_CheckNumber) => {
-  const { CHECK_NUMBER } = payload
-  console.log('Payload: ', payload)
+  const { CHECK_ID } = payload
   try {
     const rows = await queryWithBindExecute({
       sql: query.GET_LINE_DETAILS,
-      values: [CHECK_NUMBER],
+      values: [CHECK_ID],
     })
-    console.log('Rows: ', rows)
     const response = rows.map((row: any) => {
       return JSON.parse(row.line_data)
     })
-    console.log('Response: ', response)
     return response
   } catch (error) {
     console.log('Error at getLineService: ', error)

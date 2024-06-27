@@ -1,5 +1,5 @@
 export type T_InvoiceNumber = {
-  INVOICE_NUMBER: string
+  INVOICE_ID: string
   LINE_NUMBER: number
 }
 
@@ -13,7 +13,7 @@ export type T_InvoiceSearch = {
 }
 
 export type T_CheckNumber = {
-  CHECK_NUMBER: string
+  CHECK_ID: string
 }
 
 export type T_CheckSearch = {
@@ -44,6 +44,20 @@ export type T_PORequisitionSearch = {
 }
 
 export type T_RequisitionNumber = {
-  REQUISITION_NUMBER: string
+  REQUISITION_ID: string
   LINE_NUMBER: number
+}
+
+export type T_POSearch = {
+  ORGANIZATION: string
+  BUYER: string
+  PO_NUMBER: string
+  APPROVAL_STATUS: string
+  FROM_DATE: string
+  TO_DATE: string
+}
+
+export type T_PONumber = {
+  PO_HEADER_ID: string
+  LINE_NUMBER: string
 }

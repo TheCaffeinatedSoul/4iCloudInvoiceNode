@@ -1,16 +1,24 @@
 import { queryWithBindExecute } from '../../config/database'
 import { query } from '../../constants/query'
-import { T_PORequisitionSearch, T_RequisitionNumber } from '../../types/services'
+import { T_PONumber, T_POSearch } from '../../types/services'
 
-export const getRequisitionBySearchService = async (payload: T_PORequisitionSearch, page: number, limit: number) => {
-  const { ORGANIZATION, REQUISITION_NUMBER, FROM_DATE, TO_DATE } = payload
+export const getPOBySearchService = async (payload: T_POSearch, page: number, limit: number) => {
+  const { ORGANIZATION, BUYER, PO_NUMBER, APPROVAL_STATUS, FROM_DATE, TO_DATE } = payload
   try {
     const conditions = []
     const params = []
 
+    if (BUYER) {
+      conditions.push("archive_data->>'$.agent_name' LIKE ?")
+      params.push(`%${BUYER}%`)
+    }
     if (ORGANIZATION) {
-      conditions.push("archive_data->>'$.organization_name' LIKE ?")
+      conditions.push("archive_data->>'$.org_name' LIKE ?")
       params.push(`%${ORGANIZATION}%`)
+    }
+    if (APPROVAL_STATUS) {
+      conditions.push("archive_data->>'$.authorization_status' LIKE ?")
+      params.push(`%${APPROVAL_STATUS}%`)
     }
     if (FROM_DATE) {
       if (TO_DATE) {
@@ -25,9 +33,9 @@ export const getRequisitionBySearchService = async (payload: T_PORequisitionSear
       conditions.push("archive_data->>'$.creation_date' <= ?")
       params.push(TO_DATE)
     }
-    if (REQUISITION_NUMBER) {
-      conditions.push("archive_data->>'$.requisition_number' LIKE ?")
-      params.push(`%${REQUISITION_NUMBER}%`)
+    if (PO_NUMBER) {
+      conditions.push("archive_data->>'$.po_number' LIKE ?")
+      params.push(`%${PO_NUMBER}%`)
     }
 
     const whereClause = conditions.length ? `${conditions.join(' AND ')}` : ''
@@ -36,14 +44,14 @@ export const getRequisitionBySearchService = async (payload: T_PORequisitionSear
     params.push(offset)
 
     const query = `
-        SELECT * FROM arc_archive_data WHERE doc_entity_name = "REQ_HEADERS" ${conditions.length ? 'AND' : ''}
+        SELECT * FROM arc_archive_data WHERE doc_entity_name = "PO_HEADERS" ${conditions.length ? 'AND' : ''}
         ${whereClause} 
         LIMIT ? OFFSET ?
       `
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
-        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "REQ_HEADERS" ${conditions.length ? 'AND' : ''}
+        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "PO_HEADERS" ${conditions.length ? 'AND' : ''}
         ${whereClause}
       `
 
@@ -54,34 +62,34 @@ export const getRequisitionBySearchService = async (payload: T_PORequisitionSear
 
     return { data: response, pageCount }
   } catch (error) {
-    console.log('Error at getRequisitionBySearchService: ', error)
+    console.log('Error at getPOBySearchService: ', error)
   }
 }
 
-export const getDetailsByRequisitionNumberService = async (payload: T_RequisitionNumber) => {
-  const { REQUISITION_ID } = payload
-  let req_id = REQUISITION_ID
-  if (REQUISITION_ID.includes('%')) req_id = decodeURIComponent(REQUISITION_ID)
+export const getDetailsByPONumberService = async (payload: T_PONumber) => {
+  const { PO_HEADER_ID } = payload
+  let po_num = PO_HEADER_ID
+  if (PO_HEADER_ID.includes('%')) po_num = decodeURIComponent(PO_HEADER_ID)
   try {
     const rows = await queryWithBindExecute({
-      sql: query.GET_DETAILS_BY_REQUISITION_NUMBER,
-      values: [req_id],
+      sql: query.GET_DETAILS_BY_PO_NUMBER,
+      values: [po_num],
     })
     const response = rows.map((row: any) => {
       return row.archive_data
     })
     return response
   } catch (error) {
-    console.log('Error at getDetailsByRequisitionNumbeService: ', error)
+    console.log('Error at getDetailsByPONumberService: ', error)
   }
 }
 
-export const getLineService = async (payload: T_RequisitionNumber) => {
-  const { REQUISITION_ID, LINE_NUMBER } = payload
+export const getLineService = async (payload: T_PONumber) => {
+  const { PO_HEADER_ID, LINE_NUMBER } = payload
   try {
     const rows = await queryWithBindExecute({
-      sql: query.GET_REQUISITION_LINES,
-      values: [REQUISITION_ID, LINE_NUMBER],
+      sql: query.GET_PO_LINE_DETAILS,
+      values: [PO_HEADER_ID, LINE_NUMBER],
     })
     const response = rows.map((row: any) => {
       return JSON.parse(row.line_data)
