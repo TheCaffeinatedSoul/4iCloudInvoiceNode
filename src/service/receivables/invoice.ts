@@ -76,7 +76,7 @@ export const getTransactionDetailsService = async (payload: T_TransactionNumber)
   }
 }
 
-export const getLineService = async (payload: any) => {
+export const getLineService = async (payload: T_TransactionNumber) => {
   const { CUSTOMER_TRX_ID, LINE_NUMBER } = payload
   try {
     const rows = await queryWithBindExecute({

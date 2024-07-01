@@ -27,6 +27,8 @@ export type T_CheckSearch = {
 
 export type T_TransactionNumber = {
   TRANSACTION_NUMBER: string
+  CUSTOMER_TRX_ID: string
+  LINE_NUMBER: string
 }
 
 export type T_ReceivableInvoiceSearch = {
@@ -61,4 +63,9 @@ export type T_PONumber = {
   PO_HEADER_ID: string
   LINE_NUMBER: string
   LINE_LOCATION_ID: string
+}
+
+export type T_JournalSearch = {
+  FROM_DATE: string
+  TO_DATE: string
 }
