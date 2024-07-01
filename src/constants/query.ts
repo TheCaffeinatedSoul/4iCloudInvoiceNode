@@ -30,6 +30,9 @@ export const query = Object.freeze({
        ) AS ar_invoice_line
        ON arc_archive_data.doc_pk_id = ? AND ar_invoice_line.line_number = ?`,
 
+  //AR_RECEIPT
+  GET_RECEIPT_DETAILS: `SELECT * FROM arc_archive_data WHERE doc_pk_id = ? AND doc_entity_name = "AR_RECEIPT"`,
+
   //REQ_HEADERS
   GET_DETAILS_BY_REQUISITION_NUMBER: `SELECT * FROM arc_archive_data where doc_pk_id = ? AND doc_entity_name = "REQ_HEADERS"`,
   GET_REQUISITION_LINES: `SELECT JSON_UNQUOTE(JSON_EXTRACT(requisition_line.data, '$')) AS line_data

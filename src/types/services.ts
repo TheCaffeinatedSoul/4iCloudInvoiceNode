@@ -31,9 +31,20 @@ export type T_TransactionNumber = {
   LINE_NUMBER: string
 }
 
+export type T_ReceiptNumber = {
+  CASH_RECEIPT_ID: string
+}
+
 export type T_ReceivableInvoiceSearch = {
   ORGANIZATION: string
   TRANSACTION_NUMBER: string
+  FROM_DATE: string
+  TO_DATE: string
+}
+
+export type T_ReceivableReceiptSearch = {
+  ORGANIZATION: string
+  BANK_NAME: string
   FROM_DATE: string
   TO_DATE: string
 }
