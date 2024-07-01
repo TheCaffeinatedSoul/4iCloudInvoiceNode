@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getInvoiceBySearchService, getTransactionDetailsService } from '../../service/receivables/invoice'
+import { getInvoiceBySearchService, getLineService, getTransactionDetailsService } from '../../service/receivables/invoice'
 
 export const getInvoiceBySearchController = async (req: Request, res: Response) => {
   try {
@@ -26,5 +26,16 @@ export const getTransactionDetailsController = async (req: Request, res: Respons
     }
   } catch (error) {
     res.status(404).json({ message: 'Error at getTransactionDetailsController: ', error })
+  }
+}
+
+export const getLineController = async (req: Request, res: Response) => {
+  try {
+    const data = await getLineService(req.body)
+    if (data) {
+      res.status(200).json({ message: 'Data fetched', data })
+    }
+  } catch (error) {
+    res.status(404).json({ message: 'Error at getLineController: ', error })
   }
 }

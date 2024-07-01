@@ -75,3 +75,19 @@ export const getTransactionDetailsService = async (payload: T_TransactionNumber)
     console.log('Error at getTransactionDetailsService: ', error)
   }
 }
+
+export const getLineService = async (payload: any) => {
+  const { CUSTOMER_TRX_ID, LINE_NUMBER } = payload
+  try {
+    const rows = await queryWithBindExecute({
+      sql: query.GET_AR_DISTRIBUTIONS,
+      values: [CUSTOMER_TRX_ID, LINE_NUMBER],
+    })
+    const response = rows.map((row: any) => {
+      return JSON.parse(row.line_data)
+    })
+    return response
+  } catch (error) {
+    console.log('Error at getLineService: ', error)
+  }
+}
