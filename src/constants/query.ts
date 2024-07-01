@@ -41,9 +41,20 @@ export const query = Object.freeze({
          arc_archive_data.archive_data,
          '$.po_lines_all[*]' 
          COLUMNS (
-           line_number INT PATH '$.line_number',
+           line_num INT PATH '$.line_num',
            data JSON PATH '$'
          )
        ) AS po_line
        ON arc_archive_data.doc_pk_id = ? AND po_line.line_num = ?`,
+  GET_PO_LINE_LOCATION_DETAILS: `SELECT JSON_UNQUOTE(JSON_EXTRACT(po_distributions_all.data, '$')) AS line_location_data
+       FROM arc_archive_data
+       JOIN JSON_TABLE(
+         arc_archive_data.archive_data,
+		 '$.po_lines_all[*].po_lines_locations_all[*].po_distributions_all[*]' 
+         COLUMNS (
+		   po_line_location_id INT PATH '$.line_location_id',
+           data JSON PATH '$'
+         )
+       ) AS po_distributions_all
+       ON arc_archive_data.doc_pk_id = ? AND po_line_location_id= ?`,
 })

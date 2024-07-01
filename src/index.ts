@@ -3,7 +3,7 @@ import cors from 'cors'
 import morgan from 'morgan'
 import mysql from 'mysql2/promise'
 import 'dotenv/config'
-import parsedenv from './env'
+import { env } from './env'
 import { mainRouter } from './router/router'
 import { dbInitialize } from './config/database'
 
@@ -27,11 +27,11 @@ const startup = async () => {
     console.log('Initializing database module')
     const dbPool = await dbInitialize()
     app.locals.db = dbPool
-    app.listen(parsedenv.PORT, () => {
-      console.log(`Server running on port : http://localhost:${parsedenv.PORT}`)
+    app.listen(env.PORT, () => {
+      console.log(`Server running on port : http://localhost:${env.PORT}`)
     })
   } catch (error) {
-    console.log(error)
+    console.log('Error initializing database: ', error)
     process.exit(1)
   }
 }

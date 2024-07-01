@@ -1,17 +1,17 @@
 import { createPool } from 'mysql2'
 import { Pool } from 'mysql2/typings/mysql/lib/Pool'
 import { PoolConnection } from 'mysql2/typings/mysql/lib/PoolConnection'
-import parsedenv from '../env'
+import { env } from '../env'
 import { promisify } from 'util'
 import { I_Mysql } from '../interfaces/database'
 
 let pool: Pool
 
 const dbPool = {
-  host: parsedenv.MYSQL_HOST,
-  user: parsedenv.MYSQL_USERNAME,
-  password: parsedenv.MYSQL_PASSWORD,
-  database: parsedenv.MYSQL_DATABASE,
+  host: env.MYSQL_HOST,
+  user: env.MYSQL_USERNAME,
+  password: env.MYSQL_PASSWORD,
+  database: env.MYSQL_DATABASE,
   connectTimeout: 0,
   connectionLimit: 1,
 }

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getDetailsByPONumberService, getLineService, getPOBySearchService } from '../../service/purchase/purchase-order'
+import { getDetailsByPONumberService, getLineLocationDetailsService, getLineService, getPOBySearchService } from '../../service/purchase/purchase-order'
 
 export const getPOBySearchController = async (req: Request, res: Response) => {
   try {
@@ -36,5 +36,16 @@ export const getLineController = async (req: Request, res: Response) => {
     }
   } catch (error) {
     res.status(404).json({ message: 'Error at getLineController: ', error })
+  }
+}
+
+export const getLineLocationDetailsController = async (req: Request, res: Response) => {
+  try {
+    const data = await getLineLocationDetailsService(req.body)
+    if (data) {
+      res.status(200).json({ message: 'Data fetched', data })
+    }
+  } catch (error) {
+    res.status(404).json({ message: 'Error at getLineLocationDetailsController: ', error })
   }
 }

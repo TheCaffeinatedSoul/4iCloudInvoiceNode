@@ -99,3 +99,19 @@ export const getLineService = async (payload: T_PONumber) => {
     console.log('Error at getLineService: ', error)
   }
 }
+
+export const getLineLocationDetailsService = async (payload: T_PONumber) => {
+  const { PO_HEADER_ID, LINE_LOCATION_ID } = payload
+  try {
+    const rows = await queryWithBindExecute({
+      sql: query.GET_PO_LINE_LOCATION_DETAILS,
+      values: [PO_HEADER_ID, LINE_LOCATION_ID],
+    })
+    const response = rows.map((row: any) => {
+      return JSON.parse(row.line_location_data)
+    })
+    return response
+  } catch (error) {
+    console.log('Error at getLineLocationDetailsService: ', error)
+  }
+}

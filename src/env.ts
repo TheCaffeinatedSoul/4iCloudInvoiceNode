@@ -8,6 +8,13 @@ const envSchema = z.object({
   MYSQL_DATABASE: z.string().min(1),
 })
 
-const parsedenv = envSchema.parse(process.env)
+const parsedenv = envSchema.safeParse(process.env)
 
-export default parsedenv
+if (!parsedenv.success) {
+  console.error('Invalid environment variables: ', parsedenv.error.flatten().fieldErrors)
+  process.exit(1)
+}
+
+const env = Object.freeze(parsedenv.data)
+
+export { env }

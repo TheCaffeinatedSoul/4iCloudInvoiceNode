@@ -60,4 +60,5 @@ export type T_POSearch = {
 export type T_PONumber = {
   PO_HEADER_ID: string
   LINE_NUMBER: string
+  LINE_LOCATION_ID: string
 }
