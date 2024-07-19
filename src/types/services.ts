@@ -6,6 +6,7 @@ export type T_InvoiceNumber = {
 export type T_InvoiceSearch = {
   ORGANIZATION: string
   INVOICE_NUMBER: string
+  INVOICE_TYPE: string
   SUPPLIER_NUMBER: string
   SUPPLIER_NAME: string
   FROM_DATE: string
@@ -77,6 +78,47 @@ export type T_PONumber = {
 }
 
 export type T_JournalSearch = {
+  BATCH_NAME: string
+  SOURCE: string
+  LEDGER: string
+  JOURNAL_NAME: string
+  FROM_DATE: string
+  TO_DATE: string
+  PERIOD_NAME: string
+}
+
+export type T_AssetSearch = {
+  ORGANIZATION: string
+  ASSET_NUMBER: string
+  FROM_DATE: string
+  TO_DATE: string
+}
+
+export type T_AssetId = {
+  ASSET_ID: string
+  TRANSACTION_HEADER_ID: string
+}
+
+export type T_InvReceiptSearch = {
+  ORGANIZATION: string
+  RECEIPT_NUMBER: string
+  SUPPLIER_NAME: string
+  SUPPLIER_NUMBER: string
+  FROM_DATE: string
+  TO_DATE: string
+}
+
+export type T_SalesOrderSearch = {
+  ORGANIZATION: string
+  ORDER_NUMBER: string
+  FROM_DATE: string
+  TO_DATE: string
+}
+
+export type T_MoveOrderSearch = {
+  HEADER_ID: string
+  ORGANIZATION: string
+  RECEIPT_NUMBER: string
   FROM_DATE: string
   TO_DATE: string
 }

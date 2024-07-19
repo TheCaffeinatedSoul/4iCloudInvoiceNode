@@ -21,7 +21,7 @@ export const getDetailsByInvoiceNumberService = async (payload: T_InvoiceNumber)
 }
 
 export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: number, limit: number) => {
-  const { ORGANIZATION, INVOICE_NUMBER, SUPPLIER_NUMBER, SUPPLIER_NAME, FROM_DATE, TO_DATE } = payload
+  const { ORGANIZATION, INVOICE_NUMBER, INVOICE_TYPE, SUPPLIER_NUMBER, SUPPLIER_NAME, FROM_DATE, TO_DATE } = payload
   try {
     const conditions = []
     const params = []
@@ -46,6 +46,9 @@ export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: 
     if (INVOICE_NUMBER) {
       conditions.push("archive_data->>'$.invoice_num' LIKE ?")
       params.push(`%${INVOICE_NUMBER}%`)
+    }
+    if (INVOICE_TYPE) {
+      conditions.push("archive_data->>'$.")
     }
     if (SUPPLIER_NUMBER) {
       conditions.push("archive_data->>'$.vendor_num' = ?")

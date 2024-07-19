@@ -1,32 +1,23 @@
 import { queryWithBindExecute } from '../../config/database'
-import { T_JournalSearch } from '../../types/services'
+import { T_SalesOrderSearch } from '../../types/services'
 
-export const getJournalsBySearchService = async (payload: T_JournalSearch, page: number, limit: number) => {
-  const { BATCH_NAME, SOURCE, LEDGER, JOURNAL_NAME, PERIOD_NAME, FROM_DATE, TO_DATE } = payload
+export const getSalesOrderBySearchService = async (payload: T_SalesOrderSearch, page: number, limit: number) => {
+  const { ORGANIZATION, ORDER_NUMBER, FROM_DATE, TO_DATE } = payload
+
   try {
     const conditions = []
     const params = []
 
-    if (BATCH_NAME) {
-      conditions.push("archive_data->>'$.gl_je_headers.batch_name' LIKE ?")
-      params.push(BATCH_NAME)
+    if (ORDER_NUMBER) {
+      conditions.push("archive_data->>'$.order_number' LIKE ?")
+      params.push(`%${ORDER_NUMBER}%`)
     }
-    if (SOURCE) {
-      conditions.push("archive_data->>'$.gl_je_headers.je_source' LIKE ?")
-      params.push(SOURCE)
+
+    if (ORGANIZATION) {
+      conditions.push("archive_data->>'$.org_name' LIKE ?")
+      params.push(`%${ORGANIZATION}%`)
     }
-    if (LEDGER) {
-      conditions.push("archive_data->>'$.gl_je_headers.gl_je_lines.ledger_name' LIKE ?")
-      params.push(LEDGER)
-    }
-    if (JOURNAL_NAME) {
-      conditions.push("archive_date->>'$.gl_je_headers.je_name' LIKE ?")
-      params.push(JOURNAL_NAME)
-    }
-    if (PERIOD_NAME) {
-      conditions.push("archive_data->>'$.gl_je_headers.period_name' LIKE ?")
-      params.push(PERIOD_NAME)
-    }
+
     if (FROM_DATE) {
       if (TO_DATE) {
         conditions.push("archive_data->>'$.creation_date' BETWEEN ? AND ?")
@@ -47,14 +38,14 @@ export const getJournalsBySearchService = async (payload: T_JournalSearch, page:
     params.push(offset)
 
     const query = `
-        SELECT * FROM arc_archive_data WHERE doc_entity_name = "GL_JE_BATCHES" ${conditions.length ? 'AND' : ''}
+        SELECT * FROM arc_archive_data WHERE doc_entity_name = "OE_HEADERS" ${conditions.length ? 'AND' : ''}
         ${whereClause} 
         LIMIT ? OFFSET ?
       `
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
-        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "GL_JE_BATCHES" ${conditions.length ? 'AND' : ''}
+        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "OE_HEADERS" ${conditions.length ? 'AND' : ''}
         ${whereClause}
       `
 

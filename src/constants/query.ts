@@ -71,4 +71,49 @@ export const query = Object.freeze({
          )
        ) AS po_distributions_all
        ON arc_archive_data.doc_pk_id = ? AND po_line_location_id= ?`,
+
+  //AP_ASSETS
+  GET_ASSET_DETAILS: `SELECT * FROM arc_archive_data WHERE doc_pk_id = ? AND doc_entity_name = "FA_BOOKS_V"`,
+  GET_DEPRECIATION_DETAILS: `SELECT 
+  JSON_UNQUOTE(JSON_EXTRACT(depreciation.data, '$')) AS depreciations_data
+FROM 
+  arc_archive_data,
+  JSON_TABLE(
+    arc_archive_data.archive_data,
+    '$.fa_books[*]' 
+    COLUMNS (
+      transaction_header_id_in INT PATH '$.transaction_header_id_in',
+      fa_financial_inquiry_deprn_v JSON PATH '$.fa_financial_inquiry_deprn_v'
+    )
+  ) AS books,
+  JSON_TABLE(
+    books.fa_financial_inquiry_deprn_v,
+    '$[*]' 
+    COLUMNS (
+      data JSON PATH '$'
+    )
+  ) AS depreciation
+WHERE 
+  arc_archive_data.doc_pk_id = ?
+  AND books.transaction_header_id_in = ?
+LIMIT ? OFFSET ?`,
+  GET_DEPRECIATION_DETAILS_PAGECOUNT: `SELECT 
+  SUM(JSON_LENGTH(fa_books.fa_financial_inquiry_deprn_v)) AS total_depreciations_count
+FROM 
+  arc_archive_data,
+  JSON_TABLE(
+    arc_archive_data.archive_data,
+    '$.fa_books[*]' 
+    COLUMNS (
+      transaction_header_id_in INT PATH '$.transaction_header_id_in',
+      fa_financial_inquiry_deprn_v JSON PATH '$.fa_financial_inquiry_deprn_v'
+    )
+  ) AS fa_books
+WHERE 
+  arc_archive_data.doc_pk_id = ? 
+  AND fa_books.transaction_header_id_in = ?;
+`,
+
+  //MOV_ORD
+  GET_MOVE_ORDER_USING_HEADER_ID: `SELECT * FROM arc_archive_data WHERE doc_pk_id = ? AND doc_entity_name = "MOV_ORD"`,
 })
