@@ -87,6 +87,11 @@ export type T_JournalSearch = {
   PERIOD_NAME: string
 }
 
+export type T_Journals = {
+  BATCH_ID: string
+  HEADER_ID: string
+}
+
 export type T_AssetSearch = {
   ORGANIZATION: string
   ASSET_NUMBER: string

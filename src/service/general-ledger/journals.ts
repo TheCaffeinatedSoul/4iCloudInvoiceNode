@@ -1,5 +1,6 @@
 import { queryWithBindExecute } from '../../config/database'
-import { T_JournalSearch } from '../../types/services'
+import { query } from '../../constants/query'
+import { T_Journals, T_JournalSearch } from '../../types/services'
 
 export const getJournalsBySearchService = async (payload: T_JournalSearch, page: number, limit: number) => {
   const { BATCH_NAME, SOURCE, LEDGER, JOURNAL_NAME, PERIOD_NAME, FROM_DATE, TO_DATE } = payload
@@ -65,4 +66,36 @@ export const getJournalsBySearchService = async (payload: T_JournalSearch, page:
 
     return { data: response, pageCount }
   } catch (error) {}
+}
+
+export const getJournalByIdService = async (payload: T_Journals) => {
+  const { BATCH_ID } = payload
+  try {
+    const rows = await queryWithBindExecute({
+      sql: query.GET_JOURNAL_BY_ID,
+      values: [BATCH_ID],
+    })
+    const response = rows.map((row: any) => {
+      return row.archive_data
+    })
+    return response
+  } catch (error) {
+    console.log('Error at getJournalByIdService: ', error)
+  }
+}
+
+export const getLineDetailsService = async (payload: T_Journals) => {
+  const { BATCH_ID, HEADER_ID } = payload
+  try {
+    const rows = await queryWithBindExecute({
+      sql: query.GET_JOURNAL_LINES,
+      values: [BATCH_ID, HEADER_ID],
+    })
+    const response = rows.map((row: any) => {
+      return JSON.parse(row.line_data)
+    })
+    return response
+  } catch (error) {
+    console.log('Error at getLineDetailsService: ', error)
+  }
 }

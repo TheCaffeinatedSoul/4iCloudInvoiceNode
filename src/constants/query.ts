@@ -116,4 +116,16 @@ WHERE
 
   //MOV_ORD
   GET_MOVE_ORDER_USING_HEADER_ID: `SELECT * FROM arc_archive_data WHERE doc_pk_id = ? AND doc_entity_name = "MOV_ORD"`,
+
+  //GL_JE_BATCHES
+  GET_JOURNAL_BY_ID: `SELECT * FROM arc_archive_data WHERE doc_pk_id = ? AND doc_entity_name = "GL_JE_BATCHES"`,
+  GET_JOURNAL_LINES: `SELECT JSON_UNQUOTE(JSON_EXTRACT(gl_je_lines.data,'$')) AS line_data 
+	FROM arc_archive_data
+	JOIN JSON_TABLE(arc_archive_data.archive_data,
+					'$.gl_je_headers[*]'
+                    COLUMNS( je_header_id INT PATH '$.je_header_id',
+								data JSON PATH '$'
+							)
+					) as gl_je_lines
+                    ON arc_archive_data.doc_pk_id = ? AND je_header_id = ?`,
 })
