@@ -3,7 +3,7 @@ import { query } from '../../constants/query'
 import { T_ReceiptNumber, T_ReceivableReceiptSearch } from '../../types/services'
 
 export const getReceiptsBySearchService = async (payload: T_ReceivableReceiptSearch, page: number, limit: number) => {
-  const { ORGANIZATION, BANK_NAME, FROM_DATE, TO_DATE } = payload
+  const { ORGANIZATION, BANK_NAME, RECEIPT_NUMBER, FROM_DATE, TO_DATE } = payload
   try {
     const conditions = []
     const params = []
@@ -28,6 +28,10 @@ export const getReceiptsBySearchService = async (payload: T_ReceivableReceiptSea
     if (BANK_NAME) {
       conditions.push("archive_data->>'$.bank_name' LIKE ?")
       params.push(`%${BANK_NAME}%`)
+    }
+    if (RECEIPT_NUMBER) {
+      conditions.push("archive_data->>'$.receipt_number' LIKE ?")
+      params.push(`%${RECEIPT_NUMBER}%`)
     }
 
     const whereClause = conditions.length ? `${conditions.join(' AND ')}` : ''

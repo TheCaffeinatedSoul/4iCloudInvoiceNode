@@ -1,9 +1,10 @@
 import { queryWithBindExecute } from '../../config/database'
-import { T_InvReceiptSearch } from '../../types/services'
+import { query } from '../../constants/query'
+import { T_InvReceiptID, T_InvReceiptSearch } from '../../types/services'
 
 export const getReceiptsBySearchService = async (payload: T_InvReceiptSearch, page: number, limit: number) => {
   const { ORGANIZATION, RECEIPT_NUMBER, SUPPLIER_NAME, SUPPLIER_NUMBER, FROM_DATE, TO_DATE } = payload
-  
+
   try {
     const conditions = []
     const params = []
@@ -62,5 +63,37 @@ export const getReceiptsBySearchService = async (payload: T_InvReceiptSearch, pa
     }
   } catch (error) {
     console.log('Error getting receipts by search: ', error)
+  }
+}
+
+export const getReceiptByIdService = async (payload: T_InvReceiptID) => {
+  const { RECEIPT_NUMBER } = payload
+  try {
+    const rows = await queryWithBindExecute({
+      sql: query.GET_DETAILS_BY_ID,
+      values: [RECEIPT_NUMBER, 'RCV_HEADERS'],
+    })
+    const response = rows.map((row: any) => {
+      return row.archive_data
+    })
+    return response
+  } catch (error) {
+    console.log('Error at getReceiptByIdService: ', error)
+  }
+}
+
+export const getLineDetailsService = async (payload: T_InvReceiptID) => {
+  const { RECEIPT_NUMBER, LINE_ID } = payload
+  try {
+    const rows = await queryWithBindExecute({
+      sql: query.GET_INV_RECEIPT_LINES_BY_ID,
+      values: [RECEIPT_NUMBER, LINE_ID],
+    })
+    const response = rows.map((row: any) => {
+      return JSON.parse(row.line_data)
+    })
+    return response
+  } catch (error) {
+    console.log('Error at getLineDetailsService: ', error)
   }
 }

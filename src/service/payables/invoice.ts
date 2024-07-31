@@ -48,7 +48,8 @@ export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: 
       params.push(`%${INVOICE_NUMBER}%`)
     }
     if (INVOICE_TYPE) {
-      conditions.push("archive_data->>'$.")
+      conditions.push("archive_data->>'$.invoice_type_lookup_code_meaning' LIKE ? ")
+      params.push(`%${INVOICE_TYPE}%`)
     }
     if (SUPPLIER_NUMBER) {
       conditions.push("archive_data->>'$.vendor_num' = ?")

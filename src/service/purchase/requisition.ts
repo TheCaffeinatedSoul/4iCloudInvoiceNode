@@ -3,7 +3,7 @@ import { query } from '../../constants/query'
 import { T_PORequisitionSearch, T_RequisitionNumber } from '../../types/services'
 
 export const getRequisitionBySearchService = async (payload: T_PORequisitionSearch, page: number, limit: number) => {
-  const { ORGANIZATION, REQUISITION_NUMBER, FROM_DATE, TO_DATE } = payload
+  const { ORGANIZATION, REQUISITION_NUMBER, PREPARER, FROM_DATE, TO_DATE } = payload
   try {
     const conditions = []
     const params = []
@@ -28,6 +28,10 @@ export const getRequisitionBySearchService = async (payload: T_PORequisitionSear
     if (REQUISITION_NUMBER) {
       conditions.push("archive_data->>'$.requisition_number' LIKE ?")
       params.push(`%${REQUISITION_NUMBER}%`)
+    }
+    if (PREPARER) {
+      conditions.push("archive_data->>'$.preparer_full_name' LIKE ?")
+      params.push(`%${PREPARER}%`)
     }
 
     const whereClause = conditions.length ? `${conditions.join(' AND ')}` : ''

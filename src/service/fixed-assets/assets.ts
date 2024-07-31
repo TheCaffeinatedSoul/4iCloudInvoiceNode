@@ -3,7 +3,8 @@ import { query } from '../../constants/query'
 import { T_AssetId, T_AssetSearch } from '../../types/services'
 
 export const getAssetsBySearchService = async (payload: T_AssetSearch, page: number, limit: number) => {
-  const { ORGANIZATION, ASSET_NUMBER, FROM_DATE, TO_DATE } = payload
+  const { ORGANIZATION, ASSET_NUMBER, NEW_OR_USED, PROPERTY_TYPE, FROM_DATE, TO_DATE } = payload
+
   try {
     const conditions = []
     const params = []
@@ -28,6 +29,14 @@ export const getAssetsBySearchService = async (payload: T_AssetSearch, page: num
     if (ASSET_NUMBER) {
       conditions.push("archive_data->>'$.asset_number' LIKE ?")
       params.push(`%${ASSET_NUMBER}%`)
+    }
+    if (NEW_OR_USED) {
+      conditions.push("archive_data->>'$.new_used' LIKE ?")
+      params.push(`%${NEW_OR_USED.toUpperCase()}%`)
+    }
+    if (PROPERTY_TYPE) {
+      conditions.push("archive_data->>'$.property_type_code' LIKE ?")
+      params.push(`%${PROPERTY_TYPE.toUpperCase()}%`)
     }
 
     const whereClause = conditions.length ? `${conditions.join(' AND ')}` : ''

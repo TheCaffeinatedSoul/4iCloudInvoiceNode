@@ -3,7 +3,7 @@ import { query } from '../../constants/query'
 import { T_ReceivableInvoiceSearch, T_TransactionNumber } from '../../types/services'
 
 export const getInvoiceBySearchService = async (payload: T_ReceivableInvoiceSearch, page: number, limit: number) => {
-  const { ORGANIZATION, TRANSACTION_NUMBER, FROM_DATE, TO_DATE } = payload
+  const { ORGANIZATION, INVOICE_NUMBER, INVOICE_TYPE, INVOICE_CLASS, FROM_DATE, TO_DATE } = payload
   try {
     const conditions = []
     const params = []
@@ -25,9 +25,13 @@ export const getInvoiceBySearchService = async (payload: T_ReceivableInvoiceSear
       conditions.push("archive_data->>'$.trx_date' <= ?")
       params.push(TO_DATE)
     }
-    if (TRANSACTION_NUMBER) {
+    if (INVOICE_NUMBER) {
       conditions.push("archive_data->>'$.trx_number' LIKE ?")
-      params.push(`%${TRANSACTION_NUMBER}%`)
+      params.push(`%${INVOICE_NUMBER}%`)
+    }
+    if (INVOICE_TYPE) {
+      conditions.push("archive_data->>'$.cust_trx_type_name' LIKE ? ")
+      params.push(`%${INVOICE_TYPE}%`)
     }
 
     const whereClause = conditions.length ? `${conditions.join(' AND ')}` : ''

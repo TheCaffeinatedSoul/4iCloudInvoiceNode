@@ -9,7 +9,7 @@ export const getMoveOrdersBySearchService = async (payload: T_MoveOrderSearch, p
     const params = []
 
     if (ORGANIZATION) {
-      conditions.push("archive_data->>'$.org_name' LIKE ?")
+      conditions.push("archive_data->>'$.ORGANIZATION_NAME' LIKE ?")
       params.push(`%${ORGANIZATION}%`)
     }
 
@@ -38,7 +38,7 @@ export const getMoveOrdersBySearchService = async (payload: T_MoveOrderSearch, p
     const offset = (page - 1) * limit
     params.push(limit, offset)
 
-    const query = `SELECT * FROM arc_archive_data WHERE doc_entity_name = "MOV_ORD" ${conditions.length ? 'AND' : ''} ${whereClause} LIMIT ? OFFSET ?`
+    const query = `SELECT * FROM arc_archive_data WHERE doc_entity_name = "MOV_ORD" ${conditions.length ? 'AND' : ''} ${whereClause} LIMIT ? OFFSET ?;`
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
 

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getReceiptsBySearchService } from '../../service/inventory/receipts'
+import { getLineDetailsService, getReceiptByIdService, getReceiptsBySearchService } from '../../service/inventory/receipts'
 
 export const getReceiptsBySearchController = async (req: Request, res: Response) => {
   try {
@@ -15,5 +15,27 @@ export const getReceiptsBySearchController = async (req: Request, res: Response)
     }
   } catch (error) {
     res.status(404).json({ message: 'Error at getReceiptsBySearchController: ', error })
+  }
+}
+
+export const getReceiptByIdController = async (req: Request, res: Response) => {
+  try {
+    const data = await getReceiptByIdService(req.body)
+    if (data) {
+      res.status(200).json({ message: 'Data fetched', data })
+    }
+  } catch (error) {
+    res.status(404).json({ message: 'Error at getReceiptByIdController: ', error })
+  }
+}
+
+export const getLineDetailsController = async (req: Request, res: Response) => {
+  try {
+    const data = await getLineDetailsService(req.body)
+    if (data) {
+      res.status(200).json({ message: 'Data fetched', data })
+    }
+  } catch (error) {
+    res.status(404).json({ message: 'Error at getLineDetailsController: ', error })
   }
 }

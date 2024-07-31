@@ -38,13 +38,16 @@ export type T_ReceiptNumber = {
 
 export type T_ReceivableInvoiceSearch = {
   ORGANIZATION: string
-  TRANSACTION_NUMBER: string
+  INVOICE_NUMBER: string
+  INVOICE_TYPE: string
+  INVOICE_CLASS: string
   FROM_DATE: string
   TO_DATE: string
 }
 
 export type T_ReceivableReceiptSearch = {
   ORGANIZATION: string
+  RECEIPT_NUMBER: string
   BANK_NAME: string
   FROM_DATE: string
   TO_DATE: string
@@ -53,6 +56,7 @@ export type T_ReceivableReceiptSearch = {
 export type T_PORequisitionSearch = {
   ORGANIZATION: string
   REQUISITION_NUMBER: string
+  PREPARER: string
   FROM_DATE: string
   TO_DATE: string
 }
@@ -97,6 +101,8 @@ export type T_AssetSearch = {
   ASSET_NUMBER: string
   FROM_DATE: string
   TO_DATE: string
+  NEW_OR_USED: string
+  PROPERTY_TYPE: string
 }
 
 export type T_AssetId = {
@@ -113,11 +119,20 @@ export type T_InvReceiptSearch = {
   TO_DATE: string
 }
 
+export type T_InvReceiptID = {
+  RECEIPT_NUMBER: string
+  LINE_ID: string
+}
+
 export type T_SalesOrderSearch = {
   ORGANIZATION: string
   ORDER_NUMBER: string
   FROM_DATE: string
   TO_DATE: string
+}
+
+export type T_SalesOrder = {
+  HEADER_ID: string
 }
 
 export type T_MoveOrderSearch = {
@@ -126,4 +141,14 @@ export type T_MoveOrderSearch = {
   RECEIPT_NUMBER: string
   FROM_DATE: string
   TO_DATE: string
+}
+
+export type T_MtlTrxSearch = {
+  ORGANIZATION: string
+  FROM_DATE: string
+  TO_DATE: string
+}
+
+export type T_MtlTrxId = {
+  TRANSACTION_ID: string
 }

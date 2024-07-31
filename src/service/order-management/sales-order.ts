@@ -1,5 +1,6 @@
 import { queryWithBindExecute } from '../../config/database'
-import { T_SalesOrderSearch } from '../../types/services'
+import { query } from '../../constants/query'
+import { T_SalesOrder, T_SalesOrderSearch } from '../../types/services'
 
 export const getSalesOrderBySearchService = async (payload: T_SalesOrderSearch, page: number, limit: number) => {
   const { ORGANIZATION, ORDER_NUMBER, FROM_DATE, TO_DATE } = payload
@@ -38,14 +39,14 @@ export const getSalesOrderBySearchService = async (payload: T_SalesOrderSearch, 
     params.push(offset)
 
     const query = `
-        SELECT * FROM arc_archive_data WHERE doc_entity_name = "OE_HEADERS" ${conditions.length ? 'AND' : ''}
+        SELECT * FROM arc_archive_data WHERE doc_entity_name = "OE_HEADER" ${conditions.length ? 'AND' : ''}
         ${whereClause} 
         LIMIT ? OFFSET ?
       `
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
-        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "OE_HEADERS" ${conditions.length ? 'AND' : ''}
+        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "OE_HEADER" ${conditions.length ? 'AND' : ''}
         ${whereClause}
       `
 
@@ -55,5 +56,23 @@ export const getSalesOrderBySearchService = async (payload: T_SalesOrderSearch, 
     const response = rows.map((row: any) => row.archive_data)
 
     return { data: response, pageCount }
-  } catch (error) {}
+  } catch (error) {
+    console.log('Error in getSalesOrderBySearchService: ', error)
+  }
+}
+
+export const getSalesOrderDetailsService = async (payload: T_SalesOrder) => {
+  const { HEADER_ID } = payload
+  try {
+    const rows = await queryWithBindExecute({
+      sql: query.GET_DETAILS_BY_ID,
+      values: [HEADER_ID, 'OE_HEADER'],
+    })
+    const response = rows.map((row: any) => {
+      return row.archive_data
+    })
+    return response
+  } catch (error) {
+    console.log('Error in getSalesOrderDetailsService: ', error)
+  }
 }

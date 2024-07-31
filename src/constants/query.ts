@@ -1,4 +1,7 @@
 export const query = Object.freeze({
+  //ID SPECIFIC
+  GET_DETAILS_BY_ID: `SELECT * FROM arc_archive_data WHERE doc_pk_id = ? AND doc_entity_name = ?`,
+
   //AP_INVOICE
   GET_DETAILS_BY_INVOICE_NUMBER: `SELECT * FROM arc_archive_data where doc_pk_id = ? AND doc_entity_name = "AP_INVOICE"`,
   GET_LINE_DETAILS: `SELECT JSON_UNQUOTE(JSON_EXTRACT(invoice_line.data, '$')) AS line_data
@@ -64,18 +67,18 @@ export const query = Object.freeze({
        FROM arc_archive_data
        JOIN JSON_TABLE(
          arc_archive_data.archive_data,
-		 '$.po_lines_all[*].po_lines_locations_all[*].po_distributions_all[*]' 
+		 '$.po_lines_all[*].po_lines_locations_all[*]' 
          COLUMNS (
 		   po_line_location_id INT PATH '$.line_location_id',
            data JSON PATH '$'
          )
        ) AS po_distributions_all
-       ON arc_archive_data.doc_pk_id = ? AND po_line_location_id= ?`,
+       WHERE arc_archive_data.doc_pk_id = ? AND po_distributions_all.po_line_location_id= ?`,
 
   //AP_ASSETS
   GET_ASSET_DETAILS: `SELECT * FROM arc_archive_data WHERE doc_pk_id = ? AND doc_entity_name = "FA_BOOKS_V"`,
   GET_DEPRECIATION_DETAILS: `SELECT 
-  JSON_UNQUOTE(JSON_EXTRACT(depreciation.data, '$')) AS depreciations_data
+  JSON_UNQUOTE(JSON_EXTRACT(books.data, '$')) AS depreciations_data
 FROM 
   arc_archive_data,
   JSON_TABLE(
@@ -83,7 +86,8 @@ FROM
     '$.fa_books[*]' 
     COLUMNS (
       transaction_header_id_in INT PATH '$.transaction_header_id_in',
-      fa_financial_inquiry_deprn_v JSON PATH '$.fa_financial_inquiry_deprn_v'
+      fa_financial_inquiry_deprn_v JSON PATH '$.fa_financial_inquiry_deprn_v',
+      data JSON PATH '$'
     )
   ) AS books,
   JSON_TABLE(
@@ -126,6 +130,17 @@ WHERE
                     COLUMNS( je_header_id INT PATH '$.je_header_id',
 								data JSON PATH '$'
 							)
-					) as gl_je_lines
+					) AS gl_je_lines
                     ON arc_archive_data.doc_pk_id = ? AND je_header_id = ?`,
+
+  //RCV HEADERS
+  GET_INV_RECEIPT_LINES_BY_ID: `SELECT JSON_UNQUOTE(JSON_EXTRACT(receipt_lines.data,'$')) AS line_data
+                                FROM arc_archive_data
+                                JOIN JSON_TABLE(arc_archive_data.archive_data,
+                                                '$.rcv_shipment_lines[*]'
+                                                COLUMNS(
+                                                  PO_LINE_ID INT PATH '$.PO_LINE_ID',
+                                                  data JSON PATH '$')
+                                                ) AS receipt_lines
+                                ON arc_archive_data.doc_pk_id = ? AND PO_LINE_ID = ?`,
 })
