@@ -3,33 +3,38 @@ import { query } from '../../constants/query'
 import { T_SalesOrder, T_SalesOrderSearch } from '../../types/services'
 
 export const getSalesOrderBySearchService = async (payload: T_SalesOrderSearch, page: number, limit: number) => {
-  const { ORGANIZATION, ORDER_NUMBER, FROM_DATE, TO_DATE } = payload
+  const { ORGANIZATION, SALESPERSON, SOURCE, FROM_DATE, TO_DATE } = payload
 
   try {
     const conditions = []
     const params = []
 
-    if (ORDER_NUMBER) {
-      conditions.push("archive_data->>'$.order_number' LIKE ?")
-      params.push(`%${ORDER_NUMBER}%`)
+    if (SALESPERSON) {
+      conditions.push("archive_data->>'$.SALESREP_NAME' LIKE ?")
+      params.push(`%${SALESPERSON}%`)
+    }
+
+    if (SOURCE) {
+      conditions.push("archive_data->>'$.ORDER_SOURCE_DESCRIPTION' LIKE ?")
+      params.push(`%${SOURCE}%`)
     }
 
     if (ORGANIZATION) {
-      conditions.push("archive_data->>'$.org_name' LIKE ?")
+      conditions.push("archive_data->>'$.ORGANIZATION_NAME' LIKE ?")
       params.push(`%${ORGANIZATION}%`)
     }
 
     if (FROM_DATE) {
       if (TO_DATE) {
-        conditions.push("archive_data->>'$.creation_date' BETWEEN ? AND ?")
+        conditions.push("archive_data->>'$.CREATION_DATE' BETWEEN ? AND ?")
         params.push(FROM_DATE, TO_DATE)
       } else {
-        conditions.push("archive_data->>'$.creation_date' >= ?")
+        conditions.push("archive_data->>'$.CREATION_DATE' >= ?")
         params.push(FROM_DATE)
       }
     }
     if (TO_DATE) {
-      conditions.push("archive_data->>'$.creation_date' <= ?")
+      conditions.push("archive_data->>'$.CREATION_DATE' <= ?")
       params.push(TO_DATE)
     }
 

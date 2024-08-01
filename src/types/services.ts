@@ -126,7 +126,8 @@ export type T_InvReceiptID = {
 
 export type T_SalesOrderSearch = {
   ORGANIZATION: string
-  ORDER_NUMBER: string
+  SALESPERSON: string
+  SOURCE: string
   FROM_DATE: string
   TO_DATE: string
 }
@@ -152,4 +153,11 @@ export type T_MtlTrxSearch = {
 
 export type T_MtlTrxId = {
   TRANSACTION_ID: string
+}
+
+export type T_ShpTrxSearch = {
+  ORGANIZATION: string
+  STATUS: string
+  FROM_DATE: string
+  TO_DATE: string
 }
