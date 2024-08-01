@@ -145,6 +145,7 @@ export type T_MoveOrderSearch = {
 
 export type T_MtlTrxSearch = {
   ORGANIZATION: string
+  ITEM: string
   FROM_DATE: string
   TO_DATE: string
 }

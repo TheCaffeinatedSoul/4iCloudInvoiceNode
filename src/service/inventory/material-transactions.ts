@@ -3,7 +3,7 @@ import { query } from '../../constants/query'
 import { T_MtlTrxId, T_MtlTrxSearch } from '../../types/services'
 
 export const getMaterialTransactionsBySearchService = async (payload: T_MtlTrxSearch, page: number, limit: number) => {
-  const { ORGANIZATION, FROM_DATE, TO_DATE } = payload
+  const { ORGANIZATION, ITEM, FROM_DATE, TO_DATE } = payload
   try {
     const conditions = []
     const params = []
@@ -11,6 +11,10 @@ export const getMaterialTransactionsBySearchService = async (payload: T_MtlTrxSe
     if (ORGANIZATION) {
       conditions.push("archive_data->>'$.operating_unit' LIKE ?")
       params.push(`%${ORGANIZATION}%`)
+    }
+    if (ITEM) {
+      conditions.push("archive_data->>'$.item_description' LIKE ?")
+      params.push(`%${ITEM}%`)
     }
     if (FROM_DATE) {
       if (TO_DATE) {
@@ -26,7 +30,7 @@ export const getMaterialTransactionsBySearchService = async (payload: T_MtlTrxSe
       params.push(TO_DATE)
     }
 
-    const whereClause = conditions.length ? `${conditions.join('AND')}` : ''
+    const whereClause = conditions.length ? `${conditions.join(' AND ')}` : ''
 
     const offset = (page - 1) * limit
     params.push(limit, offset)
