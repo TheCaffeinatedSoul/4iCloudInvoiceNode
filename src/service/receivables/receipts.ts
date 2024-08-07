@@ -1,4 +1,5 @@
 import { queryWithBindExecute } from '../../config/database'
+import { entities } from '../../constants/entities'
 import { query } from '../../constants/query'
 import { T_ReceiptNumber, T_ReceivableReceiptSearch } from '../../types/services'
 
@@ -40,14 +41,14 @@ export const getReceiptsBySearchService = async (payload: T_ReceivableReceiptSea
     params.push(offset)
 
     const query = `
-            SELECT * FROM arc_archive_data WHERE doc_entity_name = "AR_RECEIPT" ${conditions.length ? 'AND' : ''}
+            SELECT * FROM arc_archive_data WHERE doc_entity_name = "${entities.AR_RECEIPT}" ${conditions.length ? 'AND' : ''}
             ${whereClause} 
             LIMIT ? OFFSET ?
           `
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
-            SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "AR_RECEIPT" ${conditions.length ? 'AND' : ''}
+            SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "${entities.AR_RECEIPT}" ${conditions.length ? 'AND' : ''}
             ${whereClause}
           `
 
@@ -66,8 +67,8 @@ export const getReceiptDetailsService = async (payload: T_ReceiptNumber) => {
   const { CASH_RECEIPT_ID } = payload
   try {
     const rows = await queryWithBindExecute({
-      sql: query.GET_RECEIPT_DETAILS,
-      values: [CASH_RECEIPT_ID],
+      sql: query.GET_DETAILS_BY_ID,
+      values: [CASH_RECEIPT_ID, entities.AR_RECEIPT],
     })
     const response = rows.map((row: any) => {
       return row.archive_data

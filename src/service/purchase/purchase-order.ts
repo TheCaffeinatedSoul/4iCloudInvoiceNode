@@ -1,4 +1,5 @@
 import { queryWithBindExecute } from '../../config/database'
+import { entities } from '../../constants/entities'
 import { query } from '../../constants/query'
 import { T_PONumber, T_POSearch } from '../../types/services'
 
@@ -44,14 +45,14 @@ export const getPOBySearchService = async (payload: T_POSearch, page: number, li
     params.push(offset)
 
     const query = `
-        SELECT * FROM arc_archive_data WHERE doc_entity_name = "PO_HEADERS" ${conditions.length ? 'AND' : ''}
+        SELECT * FROM arc_archive_data WHERE doc_entity_name = "${entities.PO_HEADERS}" ${conditions.length ? 'AND' : ''}
         ${whereClause} 
         LIMIT ? OFFSET ?
       `
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
-        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "PO_HEADERS" ${conditions.length ? 'AND' : ''}
+        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "${entities.PO_HEADERS}" ${conditions.length ? 'AND' : ''}
         ${whereClause}
       `
 
@@ -72,8 +73,8 @@ export const getDetailsByPONumberService = async (payload: T_PONumber) => {
   if (PO_HEADER_ID.includes('%')) po_num = decodeURIComponent(PO_HEADER_ID)
   try {
     const rows = await queryWithBindExecute({
-      sql: query.GET_DETAILS_BY_PO_NUMBER,
-      values: [po_num],
+      sql: query.GET_DETAILS_BY_ID,
+      values: [po_num, entities.PO_HEADERS],
     })
     const response = rows.map((row: any) => {
       return row.archive_data

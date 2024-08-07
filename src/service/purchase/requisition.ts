@@ -1,4 +1,5 @@
 import { queryWithBindExecute } from '../../config/database'
+import { entities } from '../../constants/entities'
 import { query } from '../../constants/query'
 import { T_PORequisitionSearch, T_RequisitionNumber } from '../../types/services'
 
@@ -40,14 +41,14 @@ export const getRequisitionBySearchService = async (payload: T_PORequisitionSear
     params.push(offset)
 
     const query = `
-        SELECT * FROM arc_archive_data WHERE doc_entity_name = "REQ_HEADERS" ${conditions.length ? 'AND' : ''}
+        SELECT * FROM arc_archive_data WHERE doc_entity_name = "${entities.REQ_HEADERS}" ${conditions.length ? 'AND' : ''}
         ${whereClause} 
         LIMIT ? OFFSET ?
       `
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
-        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "REQ_HEADERS" ${conditions.length ? 'AND' : ''}
+        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "${entities.REQ_HEADERS}" ${conditions.length ? 'AND' : ''}
         ${whereClause}
       `
 
@@ -68,8 +69,8 @@ export const getDetailsByRequisitionNumberService = async (payload: T_Requisitio
   if (REQUISITION_ID.includes('%')) req_id = decodeURIComponent(REQUISITION_ID)
   try {
     const rows = await queryWithBindExecute({
-      sql: query.GET_DETAILS_BY_REQUISITION_NUMBER,
-      values: [req_id],
+      sql: query.GET_DETAILS_BY_ID,
+      values: [req_id, entities.REQ_HEADERS],
     })
     const response = rows.map((row: any) => {
       return row.archive_data

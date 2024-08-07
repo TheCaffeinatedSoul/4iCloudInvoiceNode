@@ -1,4 +1,5 @@
 import { queryWithBindExecute } from '../../config/database'
+import { entities } from '../../constants/entities'
 import { query } from '../../constants/query'
 import { T_InvReceiptID, T_InvReceiptSearch } from '../../types/services'
 
@@ -47,11 +48,11 @@ export const getReceiptsBySearchService = async (payload: T_InvReceiptSearch, pa
     params.push(limit)
     params.push(offset)
 
-    const query = `SELECT * FROM arc_archive_data WHERE doc_entity_name = "RCV_HEADERS" ${conditions.length ? 'AND' : ''} ${whereClause} LIMIT ? OFFSET ?`
+    const query = `SELECT * FROM arc_archive_data WHERE doc_entity_name = "${entities.RCV_HEADERS}" ${conditions.length ? 'AND' : ''} ${whereClause} LIMIT ? OFFSET ?`
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
 
-    const totalCountQuery = `SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "RCV_HEADERS" ${conditions.length ? 'AND' : ''} ${whereClause}`
+    const totalCountQuery = `SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "${entities.RCV_HEADERS}" ${conditions.length ? 'AND' : ''} ${whereClause}`
 
     const totalCountRow = await queryWithBindExecute({ sql: totalCountQuery, values: params.slice(0, -2) })
     const totalCount = totalCountRow[0].totalCount
@@ -71,7 +72,7 @@ export const getReceiptByIdService = async (payload: T_InvReceiptID) => {
   try {
     const rows = await queryWithBindExecute({
       sql: query.GET_DETAILS_BY_ID,
-      values: [RECEIPT_NUMBER, 'RCV_HEADERS'],
+      values: [RECEIPT_NUMBER, entities.RCV_HEADERS],
     })
     const response = rows.map((row: any) => {
       return row.archive_data

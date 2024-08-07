@@ -1,4 +1,5 @@
 import { queryWithBindExecute } from '../../config/database'
+import { entities } from '../../constants/entities'
 import { query } from '../../constants/query'
 import { T_AssetId, T_AssetSearch } from '../../types/services'
 
@@ -45,14 +46,14 @@ export const getAssetsBySearchService = async (payload: T_AssetSearch, page: num
     params.push(offset)
 
     const query = `
-      SELECT * FROM arc_archive_data WHERE doc_entity_name = "FA_BOOKS_V" ${conditions.length ? 'AND' : ''}
+      SELECT * FROM arc_archive_data WHERE doc_entity_name = "${entities.FA_BOOKS_V}" ${conditions.length ? 'AND' : ''}
       ${whereClause} 
       LIMIT ? OFFSET ?
     `
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
-      SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "FA_BOOKS_V" ${conditions.length ? 'AND' : ''}
+      SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "${entities.FA_BOOKS_V}" ${conditions.length ? 'AND' : ''}
       ${whereClause}
     `
 
@@ -71,8 +72,8 @@ export const getAssetDetailsByAssetIdService = async (payload: T_AssetId) => {
   const { ASSET_ID } = payload
   try {
     const rows = await queryWithBindExecute({
-      sql: query.GET_ASSET_DETAILS,
-      values: [ASSET_ID],
+      sql: query.GET_DETAILS_BY_ID,
+      values: [ASSET_ID, entities.FA_BOOKS_V],
     })
     const response = rows.map((row: any) => {
       return row.archive_data

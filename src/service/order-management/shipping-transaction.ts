@@ -1,4 +1,5 @@
 import { queryWithBindExecute } from '../../config/database'
+import { entities } from '../../constants/entities'
 import { T_ShpTrxSearch } from '../../types/services'
 
 export const getShippingTransactionBySearchService = async (payload: T_ShpTrxSearch, page: number, limit: number) => {
@@ -33,7 +34,7 @@ export const getShippingTransactionBySearchService = async (payload: T_ShpTrxSea
     const offset = (page - 1) * limit
     params.push(limit, offset)
 
-    const query = `SELECT * FROM arc_archive_data WHERE doc_entity_name = "OE_SHIPPING" ${conditions.length ? 'AND' : ''} ${whereClause} LIMIT ? OFFSET ?`
+    const query = `SELECT * FROM arc_archive_data WHERE doc_entity_name = "${entities.OE_SHIPPING}" ${conditions.length ? 'AND' : ''} ${whereClause} LIMIT ? OFFSET ?`
 
     const rows = await queryWithBindExecute({
       sql: query,

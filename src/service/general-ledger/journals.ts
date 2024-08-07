@@ -1,4 +1,5 @@
 import { queryWithBindExecute } from '../../config/database'
+import { entities } from '../../constants/entities'
 import { query } from '../../constants/query'
 import { T_Journals, T_JournalSearch } from '../../types/services'
 
@@ -48,14 +49,14 @@ export const getJournalsBySearchService = async (payload: T_JournalSearch, page:
     params.push(offset)
 
     const query = `
-        SELECT * FROM arc_archive_data WHERE doc_entity_name = "GL_JE_BATCHES" ${conditions.length ? 'AND' : ''}
+        SELECT * FROM arc_archive_data WHERE doc_entity_name = "${entities.GL_JE_BATCHES}" ${conditions.length ? 'AND' : ''}
         ${whereClause} 
         LIMIT ? OFFSET ?
       `
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
-        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "GL_JE_BATCHES" ${conditions.length ? 'AND' : ''}
+        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "${entities.GL_JE_BATCHES}" ${conditions.length ? 'AND' : ''}
         ${whereClause}
       `
 
@@ -72,8 +73,8 @@ export const getJournalByIdService = async (payload: T_Journals) => {
   const { BATCH_ID } = payload
   try {
     const rows = await queryWithBindExecute({
-      sql: query.GET_JOURNAL_BY_ID,
-      values: [BATCH_ID],
+      sql: query.GET_DETAILS_BY_ID,
+      values: [BATCH_ID, entities.GL_JE_BATCHES],
     })
     const response = rows.map((row: any) => {
       return row.archive_data

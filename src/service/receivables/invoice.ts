@@ -1,4 +1,5 @@
 import { queryWithBindExecute } from '../../config/database'
+import { entities } from '../../constants/entities'
 import { query } from '../../constants/query'
 import { T_ReceivableInvoiceSearch, T_TransactionNumber } from '../../types/services'
 
@@ -40,14 +41,14 @@ export const getInvoiceBySearchService = async (payload: T_ReceivableInvoiceSear
     params.push(offset)
 
     const query = `
-        SELECT * FROM arc_archive_data WHERE doc_entity_name = "AR_INVOICE" ${conditions.length ? 'AND' : ''}
+        SELECT * FROM arc_archive_data WHERE doc_entity_name = "${entities.AR_INVOICE}" ${conditions.length ? 'AND' : ''}
         ${whereClause} 
         LIMIT ? OFFSET ?
       `
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
-        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "AR_INVOICE" ${conditions.length ? 'AND' : ''}
+        SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "${entities.AR_INVOICE}" ${conditions.length ? 'AND' : ''}
         ${whereClause}
       `
 
@@ -68,8 +69,8 @@ export const getTransactionDetailsService = async (payload: T_TransactionNumber)
   if (TRANSACTION_NUMBER.includes('%')) transaction_num = decodeURIComponent(TRANSACTION_NUMBER)
   try {
     const rows = await queryWithBindExecute({
-      sql: query.GET_TRANSACTION_DETAILS,
-      values: [transaction_num],
+      sql: query.GET_DETAILS_BY_ID,
+      values: [transaction_num, entities.AR_INVOICE],
     })
     const response = rows.map((row: any) => {
       return row.archive_data

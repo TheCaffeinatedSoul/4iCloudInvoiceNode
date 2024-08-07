@@ -1,3 +1,8 @@
+export type T_Login = {
+  USERNAME: string
+  PASSWORD: string
+}
+
 export type T_InvoiceNumber = {
   INVOICE_ID: string
   LINE_NUMBER: number

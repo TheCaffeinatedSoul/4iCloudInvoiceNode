@@ -1,4 +1,5 @@
 import { queryWithBindExecute } from '../../config/database'
+import { entities } from '../../constants/entities'
 import { query } from '../../constants/query'
 import { T_InvoiceNumber, T_InvoiceSearch } from '../../types/services'
 
@@ -8,8 +9,8 @@ export const getDetailsByInvoiceNumberService = async (payload: T_InvoiceNumber)
   if (INVOICE_ID.includes('%')) invoice_id = decodeURIComponent(INVOICE_ID)
   try {
     const rows = await queryWithBindExecute({
-      sql: query.GET_DETAILS_BY_INVOICE_NUMBER,
-      values: [invoice_id],
+      sql: query.GET_DETAILS_BY_ID,
+      values: [invoice_id, entities.AP_INVOICE],
     })
     const response = rows.map((row: any) => {
       return row.archive_data
@@ -66,14 +67,14 @@ export const getInvoiceBySearchService = async (payload: T_InvoiceSearch, page: 
     params.push(offset)
 
     const query = `
-      SELECT * FROM arc_archive_data WHERE doc_entity_name = "AP_INVOICE" ${conditions.length ? 'AND' : ''}
+      SELECT * FROM arc_archive_data WHERE doc_entity_name = "${entities.AP_INVOICE}" ${conditions.length ? 'AND' : ''}
       ${whereClause} 
       LIMIT ? OFFSET ?
     `
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
-      SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "AP_INVOICE" ${conditions.length ? 'AND' : ''}
+      SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "${entities.AP_INVOICE}" ${conditions.length ? 'AND' : ''}
       ${whereClause}
     `
 

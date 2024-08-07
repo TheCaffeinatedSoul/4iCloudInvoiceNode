@@ -1,4 +1,5 @@
 import { queryWithBindExecute } from '../../config/database'
+import { entities } from '../../constants/entities'
 import { query } from '../../constants/query'
 import { T_CheckNumber, T_CheckSearch } from '../../types/services'
 
@@ -8,8 +9,8 @@ export const getDetailsByCheckNumberService = async (payload: T_CheckNumber) => 
   if (CHECK_ID.includes('%')) check_id = decodeURIComponent(CHECK_ID)
   try {
     const rows = await queryWithBindExecute({
-      sql: query.GET_CHECK_DETAILS,
-      values: [check_id],
+      sql: query.GET_DETAILS_BY_ID,
+      values: [check_id, entities.AP_CHECKS],
     })
     const response = rows.map((row: any) => {
       return row.archive_data
@@ -62,14 +63,14 @@ export const getChecksBySearchService = async (payload: T_CheckSearch, page: num
     params.push(offset)
 
     const query = `
-      SELECT * FROM arc_archive_data WHERE doc_entity_name = "AP_CHECKS" ${conditions.length ? 'AND' : ''}
+      SELECT * FROM arc_archive_data WHERE doc_entity_name = "${entities.AP_CHECKS}" ${conditions.length ? 'AND' : ''}
       ${whereClause} 
       LIMIT ? OFFSET ?
     `
 
     const rows = await queryWithBindExecute({ sql: query, values: params })
     const totalCountQuery = `
-      SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "AP_CHECKS" ${conditions.length ? 'AND' : ''}
+      SELECT COUNT(*) as totalCount FROM arc_archive_data WHERE doc_entity_name = "${entities.AP_CHECKS}" ${conditions.length ? 'AND' : ''}
       ${whereClause}
     `
 

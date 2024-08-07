@@ -1,4 +1,5 @@
 import { queryWithBindExecute } from '../../config/database'
+import { entities } from '../../constants/entities'
 import { query } from '../../constants/query'
 import { T_MtlTrxId, T_MtlTrxSearch } from '../../types/services'
 
@@ -35,14 +36,14 @@ export const getMaterialTransactionsBySearchService = async (payload: T_MtlTrxSe
     const offset = (page - 1) * limit
     params.push(limit, offset)
 
-    const query = `SELECT * FROM arc_archive_data WHERE doc_entity_name = "MTL_TRX" ${conditions.length ? 'AND' : ''} ${whereClause} LIMIT ? OFFSET ?;`
+    const query = `SELECT * FROM arc_archive_data WHERE doc_entity_name = "${entities.MTL_TRX}" ${conditions.length ? 'AND' : ''} ${whereClause} LIMIT ? OFFSET ?;`
 
     const rows = await queryWithBindExecute({
       sql: query,
       values: params,
     })
 
-    const totalCountQuery = `SELECT COUNT(*) AS totalCount FROM arc_archive_data WHERE doc_entity_name = "MTL_TRX" ${conditions.length ? 'AND' : ''} ${whereClause};`
+    const totalCountQuery = `SELECT COUNT(*) AS totalCount FROM arc_archive_data WHERE doc_entity_name = "${entities.MTL_TRX}" ${conditions.length ? 'AND' : ''} ${whereClause};`
 
     const totalCountRow = await queryWithBindExecute({
       sql: totalCountQuery,
@@ -65,7 +66,7 @@ export const getMtlTrxByIDService = async (payload: T_MtlTrxId) => {
   try {
     const rows = await queryWithBindExecute({
       sql: query.GET_DETAILS_BY_ID,
-      values: [TRANSACTION_ID, 'MTL_TRX'],
+      values: [TRANSACTION_ID, entities.MTL_TRX],
     })
     const response = rows.map((row: any) => {
       return row.archive_data
